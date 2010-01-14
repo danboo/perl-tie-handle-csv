@@ -12,6 +12,14 @@ my $builder = Module::Build->new(
         'Text::CSV_XS' => 0,
     },
     add_to_cleanup      => [ 'Tie-Handle-CSV-*' ],
+    create_makefile_pl  => 'traditional',
+    meta_merge          =>
+       {
+       resources =>
+          {
+          repository  => 'http://github.com/danboo/perl-tie-handle-csv/',
+          }
+       },
 );
 
 $builder->create_build_script();
