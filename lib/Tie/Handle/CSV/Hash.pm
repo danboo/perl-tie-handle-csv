@@ -19,8 +19,9 @@ sub _new
 sub TIEHASH
    {
    my ($class, $parent) = @_;
-   my $self = bless { data => {}, parent => $parent }, $class;
-   $self->{'lc'} = lc $parent->{'opts'}{'key_case'} eq 'any';
+   my $self      = bless { data => {}, parent => $parent }, $class;
+   my $opts      = *$parent->{opts};
+   $self->{'lc'} = lc $opts->{'key_case'} eq 'any';
    return $self;
    }
 
@@ -61,7 +62,8 @@ sub CLEAR
 sub FIRSTKEY
    {
    my ($self) = @_;
-   $self->{'keys'} = [ @{ $self->{'parent'}{'opts'}{'header'} } ];
+   my $opts   = *{ $self->{parent} }->{opts};
+   $self->{'keys'} = [ @{ $opts->{'header'} } ];
    return shift @{ $self->{'keys'} };
    }
 
@@ -77,15 +79,16 @@ sub _stringify
    {
    my ($self) = @_;
    my $under_tie = tied %$self;
-   my @keys   = @{ $under_tie->{'parent'}{'opts'}{'header'} };
+   my $opts      = *{ $under_tie->{'parent'} }->{opts};
+   my @keys   = @{ $opts->{'header'} };
    if ($under_tie->{'lc'})
       {
       @keys = map lc, @keys;
       }
    my @values = @{ $under_tie->{'data'} }{ @keys };
-   $under_tie->{'parent'}{'opts'}{'csv_parser'}->combine(@values)
-      || croak $under_tie->{'parent'}{'opts'}{'csv_parser'}->error_input();
-   return $under_tie->{'parent'}{'opts'}{'csv_parser'}->string();
+   $opts->{'csv_parser'}->combine(@values)
+      || croak $opts->{'csv_parser'}->error_input();
+   return $opts->{'csv_parser'}->string();
    }
 
 1;
