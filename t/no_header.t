@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 41;
+use Test::More tests => 42;
 use File::Temp 'tempfile';
 
 
@@ -76,6 +76,9 @@ $line3 = <$csv_fh>;
 $line4 = <$csv_fh>;
 
 ok( ref $line1 eq 'ARRAY',              'new - ref' );
+
+eval { $csv_fh->header };
+ok( $@,                  'new - header()  - no header' );
 
 like( $line1, qr/ARRAY/,            'new - line1 - stringify' );
 like( $line2, qr/ARRAY/, 'new - line2 - stringify' );

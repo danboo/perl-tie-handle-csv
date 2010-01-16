@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 41;
+use Test::More tests => 42;
 use File::Temp 'tempfile';
 
 
@@ -76,6 +76,8 @@ $line3 = <$csv_fh>;
 $line4 = <$csv_fh>;
 
 ok( ref $line1 eq 'Tie::Handle::CSV::Hash',              'new - ref' );
+
+is( $csv_fh->header, 'one,two,thRee',     'new - header' );
 
 ok( $line1 eq 'foo,bar,baz',            'new - line1 - stringify' );
 ok( $line2 eq 'potato,monkey,rutabaga', 'new - line2 - stringify' );

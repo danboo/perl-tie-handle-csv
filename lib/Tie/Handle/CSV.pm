@@ -104,6 +104,8 @@ sub _open
          $opts{'header'} = [ $opts{'csv_parser'}->fields() ];
          }
 
+      $opts{'orig_header'} = [ @{ $opts{'header'} } ];
+
       ## support old 'force_lower' option key
       if ( $opts{'force_lower'} && ! $opts{'key_case'} )
          {
@@ -214,7 +216,7 @@ sub header
    {
    my ($self) = @_;
    my $opts   = *$self->{opts};
-   my $header = $opts->{header};
+   my $header = $opts->{orig_header};
    my $parser = $opts->{csv_parser};
    
    if ( ! $header || ref $header ne 'ARRAY' )
@@ -247,6 +249,8 @@ Version 0.10
    use Tie::Handle::CSV;
 
    my $csv_fh = Tie::Handle::CSV->new('basic.csv', header => 1);
+   
+   print $csv_fh->header, "\n";
 
    while (my $csv_line = <$csv_fh>)
       {
@@ -437,6 +441,14 @@ keys ordered as the header list.
 
 When this option is true, line reads return simple hash or array references
 without the special tied behaviors, resulting in faster line reads.
+
+=head2 header
+
+   print $csv_fh->header, "\n";
+   
+The C<header> method returns a CSV formatted header string, for objects that
+have a header. It throws a fatal exception if invoked on an object that does
+not have a header.
 
 =head1 AUTHOR
 
