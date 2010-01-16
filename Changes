@@ -1,5 +1,12 @@
 Revision history for Perl extension Tie::Handle::CSV.
 
+0.10  Sat Jan 16 10:04:30 2010
+     - added repository info to Build.PL
+     - changed implementation to allow directly invoking methos on the returned
+       object. fully backwards compatible unless you had used tied() to get the
+       underlying object.
+     - added header() method for getting the header CSV string
+
 0.09  Fri May 17 2007
      - added support for 'key_case' => 'any' option (case-insensitive hash keys)
      - setting an invalid 'csv_parser' is fatal
