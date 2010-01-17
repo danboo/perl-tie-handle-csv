@@ -11,7 +11,7 @@ use Symbol;
 use Tie::Handle::CSV::Hash;
 use Tie::Handle::CSV::Array;
 
-our $VERSION = '0.10';
+our $VERSION = '0.11';
 
 sub new
    {
@@ -224,9 +224,9 @@ sub header
       croak "handle does not contain a header";
       }
 
-   $parser->combine(@{$header})
-      || croak $parser->error_input();
-   return $parser->string();   
+   my $header_array = Tie::Handle::CSV::Array->_new($self);
+   @{ $header_array } = @{$header};
+   return $header_array;
    }
 
 1;
@@ -239,7 +239,7 @@ Tie::Handle::CSV - easy access to CSV files
 
 =head1 VERSION
 
-Version 0.10
+Version 0.11
 
 =head1 SYNOPSIS
 
@@ -444,12 +444,16 @@ without the special tied behaviors, resulting in faster line reads.
 
 =head2 header
 
-   print $csv_fh->header, "\n";
-   
-The C<header> method returns a CSV formatted header string, for objects that
-have a header. It throws a fatal exception if invoked on an object that does
-not have a header.
+The C<header> method returns a tied array reference which, when stringified,
+auto-converts to a CSV formatted string of the headers. It throws a fatal
+exception if invoked on an object that does not have a header.
 
+   my $header = $csv_fh->header;
+
+   print $header . "\n";       ## auto-convert to CSV header string
+   
+   foo($_) for @{ $header };   ## iterate over headers
+   
 =head1 AUTHOR
 
 Daniel B. Boorstein, C<< <danboo at cpan.org> >>

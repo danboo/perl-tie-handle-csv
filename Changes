@@ -1,5 +1,9 @@
 Revision history for Perl extension Tie::Handle::CSV.
 
+0.11  Sat Jan 16 22:07:54 2010
+     - header() now returns a Tie::Handle::CSV::Array instance so it can be
+       treated as a CSV string or as an array
+
 0.10  Sat Jan 16 10:04:30 2010
      - added repository info to Build.PL
      - changed implementation to allow directly invoking methos on the returned
