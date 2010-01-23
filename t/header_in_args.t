@@ -35,9 +35,9 @@ ok( tie(*FH, 'Tie::Handle::CSV', $tmp_file, header => [qw/ one tWo three /], for
 
 ## test new() interface
 
-my $csv_fh;
+open my $raw_csv_fh, '<', $tmp_file or die "$tmp_file: $!";
 
-ok(  $csv_fh = Tie::Handle::CSV->new($tmp_file, header => [qw/ one two thRee /], force_lower => 1), 'new - good - header' );
+ok( my $csv_fh = Tie::Handle::CSV->new($raw_csv_fh, header => [qw/ one two thRee /], force_lower => 1), 'new - good - header' );
 eval { Tie::Handle::CSV->new('', header => [qw/ one two three /]) };
 ok( $@, 'new - bad - header' );
 

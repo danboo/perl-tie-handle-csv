@@ -5,8 +5,9 @@ use strict;
 use warnings;
 
 use Carp;
-use Text::CSV_XS;
 use Symbol;
+use Scalar::Util;
+use Text::CSV_XS;
 
 use Tie::Handle::CSV::Hash;
 use Tie::Handle::CSV::Array;
@@ -59,17 +60,28 @@ sub _open
       {
       $opts{'simple_reads'} = ! $opts{'stringify'};
       }
-
-   ## use 3-arg open if 'open_mode' is specified,
-   ## otherwise use 2-arg to work with STDIN via '-'
-   if ( defined $opts{'open_mode'} )
+      
+   my $file_ref_type = Scalar::Util::reftype( $opts{'file'} ) || '';
+   
+   if ( $file_ref_type eq 'GLOB' )
       {
-      open( $csv_fh, $opts{'open_mode'}, $opts{'file'} )
-         || croak "$!: $opts{'file'}";
+      $csv_fh = $opts{'file'};
       }
    else
       {
-      open( $csv_fh, $opts{'file'} ) || croak "$!: $opts{'file'}";
+
+      ## use 3-arg open if 'open_mode' is specified,
+      ## otherwise use 2-arg to work with STDIN via '-'
+      if ( defined $opts{'open_mode'} )
+         {
+         open( $csv_fh, $opts{'open_mode'}, $opts{'file'} )
+            || croak "$!: $opts{'file'}";
+         }
+      else
+         {
+         open( $csv_fh, $opts{'file'} ) || croak "$!: $opts{'file'}";
+         }
+         
       }
 
    ## establish the csv object
@@ -358,6 +370,11 @@ number of arguments, the first argument takes precedence over this option.
    ## same results
    my $csv_fh = Tie::Handle::CSV->new( 'basic.csv' );
    my $csv_fh = Tie::Handle::CSV->new( file => 'basic.csv' );
+
+If you already have an open file, you can pass the GLOB reference as the C<file>
+value. This might allow you to act on STDIN, or another tied handle.
+
+   my $csv_fh = Tie::Handle::CSV->new( \*STDIN );
 
 =head3 C<header>
 
