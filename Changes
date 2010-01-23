@@ -1,5 +1,10 @@
 Revision history for Perl extension Tie::Handle::CSV.
 
+0.12  Fri Jan 22 22:42:53 2010
+     - (internal) Array/Hash objects no longer store a reference to the parent
+       Tie::Handle::CSV object (facilitates Storable::dclone() use)
+     - 'file' option in constructor can be a GLOB reference
+
 0.11  Sat Jan 16 22:07:54 2010
      - header() now returns a Tie::Handle::CSV::Array instance so it can be
        treated as a CSV string or as an array
