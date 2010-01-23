@@ -17,7 +17,12 @@ sub _new
 sub TIEARRAY
    {
    my ($class, $parent) = @_;
-   return bless { data => [], parent => $parent }, $class;
+   return bless
+      {
+      data   => [],
+      csv_xs => *$parent->{opts}{csv_parser}
+      },
+      $class;
    }
 
 sub CLEAR
@@ -51,13 +56,13 @@ sub FETCH
 
 sub _stringify
    {
-   my ($self) = @_;
+   my ($self)    = @_;
    my $under_tie = tied @{ $self };
-   my @values = @{ $under_tie->{'data'} };
-   my $opts      = *{ $under_tie->{'parent'} }->{opts};
-   $opts->{'csv_parser'}->combine(@values)
-      || croak $opts->{'csv_parser'}->error_input();
-   return $opts->{'csv_parser'}->string();
+   my @values    = @{ $under_tie->{'data'} };
+   my $csv_xs    = $under_tie->{csv_xs};
+   $csv_xs->combine(@values)
+      || croak $$csv_xs->error_input();
+   return $csv_xs->string();
    }
 
 1;
