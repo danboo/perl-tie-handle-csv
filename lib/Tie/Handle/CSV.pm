@@ -171,24 +171,26 @@ sub READLINE
       }
    else
       {
-      my $csv_line = readline(*$self->{'handle'});
-      if (defined $csv_line)
+      if ( $opts->{'header'} )
          {
-         $opts->{'csv_parser'}->parse($csv_line)
-            || croak $opts->{'csv_parser'}->error_input();
-         if ( $opts->{'header'} )
+         my $cols = $opts->{'csv_parser'}->getline(*$self->{'handle'});
+         if (defined $cols)
             {
             my $parsed_line = $opts->{'simple_reads'}
                ? {} : Tie::Handle::CSV::Hash->_new($self);
             @{ $parsed_line }{ @{ $opts->{'header'} } }
-               = $opts->{'csv_parser'}->fields();
+               = @{ $cols };
             return $parsed_line;
             }
-         else
+         }
+      else
+         {
+         my $cols = $opts->{'csv_parser'}->getline(*$self->{'handle'});
+         if (defined $cols)
             {
             my $parsed_line = $opts->{'simple_reads'}
                ? [] : Tie::Handle::CSV::Array->_new($self);
-            @{ $parsed_line } = $opts->{'csv_parser'}->fields();
+            @{ $parsed_line } = @{ $cols };
             return $parsed_line;
             }
          }
