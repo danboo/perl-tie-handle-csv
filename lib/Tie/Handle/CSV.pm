@@ -12,7 +12,7 @@ use Text::CSV_XS;
 use Tie::Handle::CSV::Hash;
 use Tie::Handle::CSV::Array;
 
-our $VERSION = '0.12';
+our $VERSION = '0.13';
 
 sub new
    {
