@@ -96,11 +96,11 @@ sub _open
    elsif ( defined $opts{'sep_char'} )
       {
       $opts{'csv_parser'} =
-         Text::CSV_XS->new( { sep_char => $opts{'sep_char'} } );
+         Text::CSV_XS->new( { sep_char => $opts{'sep_char'}, binary => 1 } );
       }
    else
       {
-      $opts{'csv_parser'} = Text::CSV_XS->new();
+      $opts{'csv_parser'} = Text::CSV_XS->new( { binary => 1 } );
       }
 
    $opts{'header'} = 1 unless exists $opts{'header'};
