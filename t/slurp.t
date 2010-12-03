@@ -9,7 +9,7 @@ use File::Temp 'tempfile';
 my ($tmp_fh, $tmp_file) = tempfile( UNLINK => 1 );
 
 print $tmp_fh <<EOCSV;
-foo,bar,baz
+foo,"b$/ar",baz
 potato,monkey,rutabaga
 fred,barney,wilma
 EOCSV
@@ -34,13 +34,13 @@ my @lines = <$csv_fh>;
 is( ref $lines[0], 'Tie::Handle::CSV::Array', 'tie - ref' );
 is( scalar @lines, 3, 'tie - line count' );
 
-is( $lines[0], 'foo,bar,baz',            'tie - lines[0] - stringify' );
+is( $lines[0], qq(foo,"b$/ar",baz),      'tie - lines[0] - stringify' );
 is( $lines[1], 'potato,monkey,rutabaga', 'tie - lines[1] - stringify' );
 is( $lines[2], 'fred,barney,wilma',      'tie - lines[2] - stringify' );
 is( $lines[3], undef,                    'tie - lines[3] - undef' );
 
 is( $lines[0]->[0], 'foo', 'tie - lines[0] - 0' );
-is( $lines[0]->[1], 'bar', 'tie - lines[0] - 1' );
+is( $lines[0]->[1], qq(b$/ar), 'tie - lines[0] - 1' );
 is( $lines[0]->[2], 'baz', 'tie - lines[0] - 2' );
 is( $lines[0]->[3], undef, 'tie - lines[0] - 3' );
 
