@@ -28,7 +28,7 @@ sub TIEHASH
       },
       $class;
    
-   $self->{'lc'} = lc $opts->{'key_case'} eq 'any';
+   $self->{'lc'} = defined $opts->{'key_case'} && lc $opts->{'key_case'} eq 'any';
    return $self;
    }
 
