@@ -1,20 +1,23 @@
 Revision history for Perl extension Tie::Handle::CSV.
 
-0.13  Thu Dec 02 21:16:21 2010
+0.14  Sat Jan 21 2012
+     - fix issue in Tie::Handle::CSV::Hash performing lc() on an undef value
+
+0.13  Thu Dec 02 2010
      - in READLINE() use Text::CSV_XS->getline() instead of parse(). This gives
        a slight speedup and allows reading CSV files with newline-embedded
        fields.
 
-0.12  Fri Jan 22 22:42:53 2010
+0.12  Fri Jan 22 2010
      - (internal) Array/Hash objects no longer store a reference to the parent
        Tie::Handle::CSV object (facilitates Storable::dclone() use)
      - 'file' option in constructor can be a GLOB reference
 
-0.11  Sat Jan 16 22:07:54 2010
+0.11  Sat Jan 16 2010
      - header() now returns a Tie::Handle::CSV::Array instance so it can be
        treated as a CSV string or as an array
 
-0.10  Sat Jan 16 10:04:30 2010
+0.10  Sat Jan 16 2010
      - added repository info to Build.PL
      - changed implementation to allow directly invoking methos on the returned
        object. fully backwards compatible unless you had used tied() to get the
