@@ -27,7 +27,7 @@ sub TIEHASH
       header => $opts->{header},
       },
       $class;
-   
+
    $self->{'lc'} = defined $opts->{'key_case'} && lc $opts->{'key_case'} eq 'any';
    return $self;
    }
@@ -35,28 +35,28 @@ sub TIEHASH
 sub STORE
    {
    my ($self, $key, $value) = @_;
-   $key = $self->{'lc'} ? lc $key : $key;
+   $key = lc $key if $self->{lc};
    $self->{'data'}{$key} = $value;
    }
 
 sub FETCH
    {
    my ($self, $key) = @_;
-   $key = $self->{'lc'} ? lc $key : $key;
+   $key = lc $key if $self->{lc};
    return $self->{'data'}{$key};
    }
 
 sub EXISTS
    {
    my ($self, $key) = @_;
-   $key = $self->{'lc'} ? lc $key : $key;
+   $key = lc $key if $self->{lc};
    exists $self->{'data'}{$key};
    }
 
 sub DELETE
    {
    my ($self, $key) = @_;
-   $key = $self->{'lc'} ? lc $key : $key;
+   $key = lc $key if $self->{lc};
    delete $self->{'data'}{$key};
    }
 
@@ -84,17 +84,30 @@ sub NEXTKEY
 sub _stringify
    {
    my ($self) = @_;
-   my $under_tie = tied %$self;
-   my @keys   = @{ $under_tie->{'header'} };
+   my $under_tie = tied %{ $self };
+   my $keys   = $under_tie->{'header'};
    if ($under_tie->{'lc'})
       {
-      @keys = map lc, @keys;
+      $keys = [ map { lc($_) } @{ $keys } ];
       }
-   my @values = @{ $under_tie->{'data'} }{ @keys };
+   my @values = @{ $under_tie->{'data'} }{ @{ $keys } };
    my $csv_xs    = $under_tie->{csv_xs};
    $csv_xs->combine(@values)
       || croak $$csv_xs->error_input();
    return $csv_xs->string();
+   }
+
+sub _init_store
+   {
+   my ($self, $values) = @_;
+   my $under_tie = tied %{ $self };
+   my $keys   = $under_tie->{'header'};
+   if ($under_tie->{'lc'})
+      {
+      $keys = [ map { lc($_) } @{ $keys } ];
+      }
+   my $data = $under_tie->{data};
+   @{ $data }{ @{ $keys } } = @{ $values };
    }
 
 1;

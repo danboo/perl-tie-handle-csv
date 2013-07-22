@@ -12,7 +12,7 @@ use Text::CSV_XS;
 use Tie::Handle::CSV::Hash;
 use Tie::Handle::CSV::Array;
 
-our $VERSION = '0.14';
+our $VERSION = '0.15';
 
 sub new
    {
@@ -22,7 +22,7 @@ sub new
    $self->_open(@_);
    return $self;
    }
-   
+
 sub TIEHANDLE
    {
    return $_[0] if ref $_[0];
@@ -33,7 +33,7 @@ sub TIEHANDLE
 sub _open
    {
    my ($self, @opts) = @_;
-   
+
    my ($file, %opts, $csv_fh);
 
    ## if an odd number of options are given,
@@ -60,9 +60,9 @@ sub _open
       {
       $opts{'simple_reads'} = ! $opts{'stringify'};
       }
-      
+
    my $file_ref_type = Scalar::Util::reftype( $opts{'file'} ) || '';
-   
+
    if ( $file_ref_type eq 'GLOB' )
       {
       $csv_fh = $opts{'file'};
@@ -81,7 +81,7 @@ sub _open
          {
          open( $csv_fh, $opts{'file'} ) || croak "$!: $opts{'file'}";
          }
-         
+
       }
 
    ## establish the csv object
@@ -145,7 +145,7 @@ sub _open
          }
 
       }
-      
+
    *$self->{handle} = $csv_fh;
    *$self->{opts}   = \%opts;
    }
@@ -153,7 +153,7 @@ sub _open
 sub READLINE
    {
    my ($self) = @_;
-   
+
    my $opts = *$self->{'opts'};
 
    if (wantarray)
@@ -176,17 +176,34 @@ sub READLINE
          {
          if ( $opts->{'header'} )
             {
-            my $parsed_line = $opts->{'simple_reads'}
-               ? {} : Tie::Handle::CSV::Hash->_new($self);
-            @{ $parsed_line }{ @{ $opts->{'header'} } }
-               = @{ $cols };
+            my $parsed_line;
+
+            if ( $opts->{'simple_reads'} )
+               {
+               @{ $parsed_line }{ @{ $opts->{'header'} } } = @{ $cols };
+               }
+            else
+               {
+               $parsed_line = Tie::Handle::CSV::Hash->_new($self);
+               $parsed_line->_init_store( $cols );
+               }
+
             return $parsed_line;
             }
          else
             {
-            my $parsed_line = $opts->{'simple_reads'}
-               ? [] : Tie::Handle::CSV::Array->_new($self);
-            @{ $parsed_line } = @{ $cols };
+            my $parsed_line;
+
+            if ( $opts->{'simple_reads'} )
+               {
+               @{ $parsed_line } = @{ $cols };
+               }
+            else
+               {
+               $parsed_line = Tie::Handle::CSV::Array->_new($self);
+               $parsed_line->_init_store( $cols );
+               }
+
             return $parsed_line;
             }
          }
@@ -221,14 +238,14 @@ sub TELL
    my ($self) = @_;
    return tell *$self->{'handle'};
    }
-   
+
 sub header
    {
    my ($self) = @_;
    my $opts   = *$self->{opts};
    my $header = $opts->{orig_header};
    my $parser = $opts->{csv_parser};
-   
+
    if ( ! $header || ref $header ne 'ARRAY' )
       {
       croak "handle does not contain a header";
@@ -259,7 +276,7 @@ Version 0.12
    use Tie::Handle::CSV;
 
    my $csv_fh = Tie::Handle::CSV->new('basic.csv', header => 1);
-   
+
    print $csv_fh->header, "\n";
 
    while (my $csv_line = <$csv_fh>)
@@ -466,9 +483,9 @@ exception if invoked on an object that does not have a header.
    my $header = $csv_fh->header;
 
    print $header . "\n";       ## auto-convert to CSV header string
-   
+
    foo($_) for @{ $header };   ## iterate over headers
-   
+
 =head1 AUTHOR
 
 Daniel B. Boorstein, C<< <danboo at cpan.org> >>

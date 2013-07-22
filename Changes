@@ -1,5 +1,10 @@
 Revision history for Perl extension Tie::Handle::CSV.
 
+0.15  Mon Jul 22 2013
+     - make tied HASH and ARRAY interfaces faster by moving the initial
+       slice operations from the tied object to the underlying raw data
+       structure
+
 0.14  Sat Jan 21 2012
      - fix issue in Tie::Handle::CSV::Hash performing lc() on an undef value
 

@@ -65,6 +65,14 @@ sub _stringify
    return $csv_xs->string();
    }
 
+sub _init_store
+   {
+   my ($self, $values) = @_;
+   my $under_tie = tied @{ $self };
+   my $data = $under_tie->{data};
+   @{ $data } = @{ $values };
+   }
+
 1;
 
 __END__
