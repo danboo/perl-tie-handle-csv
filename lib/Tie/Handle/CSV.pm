@@ -393,8 +393,8 @@ value. This might allow you to act on STDIN, or another tied handle.
 
 =head3 C<header>
 
-This option controls whether headers are to be used. If it is false, lines will
-be represented as array references.
+This option controls whether headers are to be used. If it is given and false,
+lines will be represented as array references.
 
    ## no header
    my $csv_fh = Tie::Handle::CSV->new( 'no_header.csv', header => 0 );
@@ -402,9 +402,9 @@ be represented as array references.
    my $csv_line = <$csv_fh>;
    print $csv_line->[0], "\n";
 
-If this option is true, and not an array reference the values from the first
-line of the file are used as the keys in the hash references returned from
-subsequent line reads.
+If this option is non-existent or true, and not an array reference the values
+from the first line of the file are used as the keys in the hash references
+returned from subsequent line reads.
 
    ## header in file
    my $csv_fh = Tie::Handle::CSV->new( 'header.csv' );
